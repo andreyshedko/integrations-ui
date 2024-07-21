@@ -4,8 +4,15 @@ import { DeliveryProvider } from "@/models/delivery_provider";
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
+interface Country {
+  id: number;
+  alpha2: string;
+  alpha3: string;
+  name: string;
+}
+
 export default function AddDeliveryProvider() {
-  const [countries, setRowData] = useState([]);
+  const [countries, setRowData] = useState<Country[]>([]);
 
   useEffect(() => {
     fetch("../api/countries")
@@ -15,26 +22,36 @@ export default function AddDeliveryProvider() {
 
   let [provider, setProvider] = useState<DeliveryProvider>();
 
-    useEffect(() => {
-      fetch("../api/delivery_providers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      })
-        .then((response) => console.log(response))
-        .then((data) => console.log());
-    }, [provider]);
+  const [selectedCountries, setSelected] = useState<string>("");
+
+  useEffect(() => {
+    fetch("../api/delivery_providers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(provider),
+    })
+      .then((response) => response.json())
+      .then((data) => setProvider(data));
+  }, [provider]);
 
   const saveProvider = (e: FormData) => {
     provider = {
-        provider_name: e.get('provider_name'),
-        country_operates: e.get('country_operates'),
-        api_address: e.get('api_address')
-    }
+      provider_name: e.get("provider_name"),
+      country_operate: selectedCountries.split(","),
+      api_address: e.get("api_address"),
+      api_key: e.get("api_key"),
+      api_password: e.get("api_password"),
+      support_email: e.get("support_email"),
+      comments: e.get("comments"),
+    };
 
-    setProvider(provider)
+    setProvider({ ...provider } as DeliveryProvider);
+  };
+
+  const setCountries = (e) => {
+    setSelected(e.target.value);
   };
 
   return (
@@ -56,9 +73,10 @@ export default function AddDeliveryProvider() {
               placeholder="Select countries where provider works"
               selectionMode="multiple"
               name="countries_operate"
+              onChange={setCountries}
             >
               {countries.map((country) => (
-                <SelectItem key={country.id}>{country.name}</SelectItem>
+                <SelectItem key={country.alpha2}>{country.name}</SelectItem>
               ))}
             </Select>
           </div>
@@ -82,7 +100,12 @@ export default function AddDeliveryProvider() {
             <Textarea label="Comments" placeholder="Enter your description" />
           </div>
 
-          <Button color="primary" variant="bordered" type="submit" className="mt-3">
+          <Button
+            color="primary"
+            variant="bordered"
+            type="submit"
+            className="mt-3"
+          >
             Save Provider
           </Button>
         </form>

@@ -34,12 +34,12 @@ export default async function RootLayout({
               justify="center"
             ></NavbarContent>
             <NavbarItem>
-              <Link color="foreground" href="delivery_providers">
+              <Link color="foreground" href="/delivery_providers">
                 Delivery Providers
               </Link>
             </NavbarItem>
             <NavbarItem>
-              <Link color="foreground" href="payment">
+              <Link color="foreground" href="/payment">
                 Payment Providers
               </Link>
             </NavbarItem>

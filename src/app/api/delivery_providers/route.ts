@@ -11,8 +11,25 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
-  const name = formData.get("provider_name");
-  const email = formData.get("country_operates");
-  return Response.json({ name, email });
+  const provider = await request.json();
+  const res = await fetch(
+    `${process.env.INTEGRATIONS_API}/delivery_providers`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(provider),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch delivery providers");
+  }
+
+  console.log(await res.json())
+
+  const data = await res.json();
+  console.log("6666666", data);
+  return Response.json({ data });
 }
