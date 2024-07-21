@@ -5,6 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
+import { Button, Link } from "@nextui-org/react";
 
 export default function DeliveryProviders() {
   const colDefs: ColDef<DeliveryProvider>[] = [
@@ -33,13 +34,27 @@ export default function DeliveryProviders() {
 
   return (
     <>
-      <h1 className="ml-4 font-bold text-large">Delivery Providers</h1>
-      <div style={gridStyle} className="ag-theme-quartz">
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={colDefs}
-          defaultColDef={defaultColDef}
-        />
+      <div className="grid grid-cols-2">
+        <p className="m-3 font-bold text-2xl">Delivery Providers</p>
+        <Button
+          href="../delivery_providers/create"
+          as={Link}
+          color="primary"
+          showAnchorIcon
+          variant="solid"
+          className="m-3"
+        >
+          Add Provider
+        </Button>
+      </div>
+      <div>
+        <div style={gridStyle} className="ag-theme-quartz">
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={colDefs}
+            defaultColDef={defaultColDef}
+          />
+        </div>
       </div>
     </>
   );
