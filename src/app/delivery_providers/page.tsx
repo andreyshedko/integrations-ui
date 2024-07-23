@@ -1,14 +1,36 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { DeliveryProvider } from "@/models/delivery_provider";
-import { AgGridReact } from "ag-grid-react";
+import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
 import { Button, Link } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function DeliveryProviders() {
-  const colDefs: ColDef<DeliveryProvider>[] = [
+  const router = useRouter();
+  const navigateToRoute = (id: number, path: string) => {
+    router.push(`../delivery_providers/${path}/${id}`)
+  };
+
+  const EditButtonComponent = (props: CustomCellRendererProps) => {
+    return (
+      <Button size="sm" onClick={() => navigateToRoute(props.data.id, 'update')}>
+        Edit
+      </Button>
+    );
+  };
+
+  const DeleteButtonComponent = (props: CustomCellRendererProps) => {
+    return (
+      <Button size="sm" onClick={() => navigateToRoute(props.data.id, 'edit')}>
+        Delete
+      </Button>
+    );
+  };
+
+  const colDefs: ColDef<DeliveryProvider & { edit: void; delete: void }>[] = [
     { field: "id" },
     { field: "provider_name" },
     { field: "country_operate" },
@@ -17,7 +39,8 @@ export default function DeliveryProviders() {
     { field: "api_password" },
     { field: "support_email" },
     { field: "comments" },
-    { field: "actions" },
+    { field: "edit", cellRenderer: EditButtonComponent, headerName: "" },
+    { field: "delete", cellRenderer: DeleteButtonComponent, headerName: "" },
   ];
   const defaultColDef: ColDef = {
     flex: 1,
