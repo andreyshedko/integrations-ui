@@ -24,12 +24,29 @@ export async function POST(request: Request) {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch delivery providers");
+    throw new Error(`Failed to add delivery providers ${res.statusText}`);
   }
 
-  console.log(await res.json())
+  const data = await res.json();
+  return Response.json({ data });
+}
+
+export async function DELETE(request: Request) {
+  const provider = await request.json();
+  const res = await fetch(
+    `${process.env.INTEGRATIONS_API}/delivery_providers/${provider.id}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Failed to add delivery providers ${res.statusText}`);
+  }
 
   const data = await res.json();
-  console.log("6666666", data);
   return Response.json({ data });
 }

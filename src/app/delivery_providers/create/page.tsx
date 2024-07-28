@@ -1,23 +1,17 @@
 "use client";
 
+import { addDeliveryProvider, fetchCountries } from "@/app/utils";
+import { Country } from "@/models/country";
 import { DeliveryProvider } from "@/models/delivery_provider";
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-
-interface Country {
-  id: number;
-  alpha2: string;
-  alpha3: string;
-  name: string;
-}
 
 export default function AddDeliveryProvider() {
   const [countries, setRowData] = useState<Country[]>([]);
 
   useEffect(() => {
-    fetch("../api/countries")
-      .then((response) => response.json())
-      .then((data) => setRowData(data.countries));
+    const path = "../../api/countries";
+    fetchCountries(path).then((data) => setRowData(data.countries));
   }, []);
 
   let [provider, setProvider] = useState<DeliveryProvider>();
@@ -25,15 +19,8 @@ export default function AddDeliveryProvider() {
   const [selectedCountries, setSelected] = useState<string>("");
 
   useEffect(() => {
-    fetch("../api/delivery_providers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(provider),
-    })
-      .then((response) => response.json())
-      .then((data) => setProvider(data));
+    if (!provider) return;
+    addDeliveryProvider(provider!);
   }, [provider]);
 
   const saveProvider = (e: FormData) => {
@@ -50,7 +37,9 @@ export default function AddDeliveryProvider() {
     setProvider({ ...provider } as DeliveryProvider);
   };
 
-  const setCountries = (e) => {
+  const setCountries = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
     setSelected(e.target.value);
   };
 

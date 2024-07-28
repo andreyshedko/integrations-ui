@@ -1,84 +1,71 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DeliveryProvider } from "@/models/delivery_provider";
-import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
-import { ColDef } from "ag-grid-community";
-import { Button, Link } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { Button, Link, useDisclosure } from "@nextui-org/react";
+import { deleteDeliveryProvider, getDeliveryProvider } from "../utils";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DeliveryProvidersGrid from "@/components/DeliveryProvidersGrid";
 
 export default function DeliveryProviders() {
-  const router = useRouter();
-  const navigateToRoute = (id: number, path: string) => {
-    router.push(`../delivery_providers/${path}/${id}`)
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [provider, setProvider] = useState<DeliveryProvider>();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const deleteProvider = (): void => {
+    setConfirmDelete(true);
   };
 
-  const EditButtonComponent = (props: CustomCellRendererProps) => {
-    return (
-      <Button size="sm" onClick={() => navigateToRoute(props.data.id, 'update')}>
-        Edit
-      </Button>
-    );
-  };
-
-  const DeleteButtonComponent = (props: CustomCellRendererProps) => {
-    return (
-      <Button size="sm" onClick={() => navigateToRoute(props.data.id, 'edit')}>
-        Delete
-      </Button>
-    );
-  };
-
-  const colDefs: ColDef<DeliveryProvider & { edit: void; delete: void }>[] = [
-    { field: "id" },
-    { field: "provider_name" },
-    { field: "country_operate" },
-    { field: "api_address" },
-    { field: "api_key" },
-    { field: "api_password" },
-    { field: "support_email" },
-    { field: "comments" },
-    { field: "edit", cellRenderer: EditButtonComponent, headerName: "" },
-    { field: "delete", cellRenderer: DeleteButtonComponent, headerName: "" },
-  ];
-  const defaultColDef: ColDef = {
-    flex: 1,
-  };
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
-    fetch("../api/delivery_providers")
-      .then((response) => response.json())
-      .then((data) => setRowData(data.data));
+    getDeliveryProvider().then((data) => setRowData(data.data));
   }, []);
 
-  const gridStyle = useMemo(() => ({ height: "90vh", width: "100%" }), []);
+  useEffect(() => {
+    if (!provider) return;
+    deleteDeliveryProvider(provider!)
+      .then((data) => {
+        if (data.data === 0) {
+          getDeliveryProvider().then((data) => setRowData(data.data));
+          toast("Provider deleted");
+          setConfirmDelete(false);
+        }
+      })
+      .catch(() => toast("Delete Error"));
+  }, [confirmDelete, provider]);
 
   return (
     <>
+      <ConfirmDeleteModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpen={onOpen}
+        provider={provider!}
+        deleteProvider={deleteProvider}
+      />
       <div className="grid grid-cols-2">
         <p className="m-3 font-bold text-2xl">Delivery Providers</p>
         <Button
           href="../delivery_providers/create"
           as={Link}
           color="primary"
+          variant="ghost"
           showAnchorIcon
-          variant="solid"
           className="m-3"
         >
           Add Provider
         </Button>
       </div>
       <div>
-        <div style={gridStyle} className="ag-theme-quartz">
-          <AgGridReact
-            rowData={rowData}
-            columnDefs={colDefs}
-            defaultColDef={defaultColDef}
-          />
-        </div>
+        <DeliveryProvidersGrid
+          rowData={rowData}
+          setProvider={setProvider}
+          onOpen={onOpen}
+        />
       </div>
+      <ToastContainer />
     </>
   );
 }
