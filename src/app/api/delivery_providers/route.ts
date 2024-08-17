@@ -31,6 +31,28 @@ export async function POST(request: Request) {
   return Response.json({ data });
 }
 
+export async function PUT(request: Request) {
+  console.log(request)
+  const provider = await request.json();
+  const res = await fetch(
+    `${process.env.INTEGRATIONS_API}/delivery_providers`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(provider),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Failed to update delivery providers ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  return Response.json({ data });
+}
+
 export async function DELETE(request: Request) {
   const provider = await request.json();
   const res = await fetch(

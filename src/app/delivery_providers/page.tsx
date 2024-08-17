@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { DeliveryProvider } from "@/models/delivery_provider";
 import { Button, Link, useDisclosure } from "@nextui-org/react";
-import { deleteDeliveryProvider, getDeliveryProvider } from "../utils";
+import { deleteDeliveryProvider, getDeliveryProviders } from "../utils";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,7 +20,7 @@ export default function DeliveryProviders() {
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
-    getDeliveryProvider().then((data) => setRowData(data.data));
+    getDeliveryProviders().then((data) => setRowData(data.data));
   }, []);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function DeliveryProviders() {
     deleteDeliveryProvider(provider!)
       .then((data) => {
         if (data.data === 0) {
-          getDeliveryProvider().then((data) => setRowData(data.data));
+          getDeliveryProviders().then((data) => setRowData(data.data));
           toast("Provider deleted");
           setConfirmDelete(false);
         }

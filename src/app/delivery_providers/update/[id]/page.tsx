@@ -1,46 +1,68 @@
 "use client";
 
-import { fetchCountries, updateDeliveryProvider } from "@/app/utils";
+import {
+  fetchCountries,
+  getDeliveryProvider,
+  updateDeliveryProvider,
+} from "@/app/utils";
 import { Country } from "@/models/country";
 import { DeliveryProvider } from "@/models/delivery_provider";
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import { useParams } from "next/navigation";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+type FormData = {
+  id: number;
+  provider_name: string;
+  country_operate: string[];
+  api_address: string;
+  api_key: string;
+  api_password: string;
+  support_email: string;
+  comments: string;
+};
 
 const Update = () => {
   const params = useParams<{ id: string }>();
+  let [provider, setDeliveryProvider] = useState<DeliveryProvider>();
 
-  const [countries, setRowData] = useState<Country[]>([]);
+  useEffect(() => {
+    getDeliveryProvider(+params.id).then((data) => {
+      setDeliveryProvider(data.data);
+    });
+  }, [params.id]);
+
+  const ref = useRef(false);
+
+  const { control, formState, getValues } = useForm<FormData>({
+    values: provider as FormData,
+  });
+  const { isDirty, isValid } = formState;
+
+  const onSubmit = (event): void => {
+    const provider = getValues();
+    event.preventDefault();
+    updateDeliveryProvider({ ...provider }, "../../../api/delivery_providers").then(
+      () => {
+        toast("Provider Updated");
+      }
+    );
+  };
+
+  const [countries, setCountries] = useState<Country[]>([]);
   useEffect(() => {
     const path = "../../../api/countries";
-    fetchCountries(path).then((data) => setRowData(data.countries));
+    fetchCountries(path).then((data) => setCountries(data.countries));
   }, []);
 
   const [selectedCountries, setSelected] = useState<string>("");
 
-  let [provider, setDeliveryProvider] = useState<DeliveryProvider>();
-  useEffect(() => {
-    const path = `../api/delivery_providers/${params.id}`;
-    updateDeliveryProvider(provider!, path).then((data) =>
-      setDeliveryProvider(data.data)
-    );
-  }, [provider, params.id]);
-
-  const saveProvider = (e: FormData) => {
-    provider = {
-      provider_name: e.get("provider_name"),
-      country_operate: selectedCountries.split(","),
-      api_address: e.get("api_address"),
-      api_key: e.get("api_key"),
-      api_password: e.get("api_password"),
-      support_email: e.get("support_email"),
-      comments: e.get("comments"),
-    };
-
-    setDeliveryProvider({ ...provider } as DeliveryProvider);
-  };
-
-  const setCountries = (e: { target: { value: SetStateAction<string>; }; }) => {
+  const setSelectedCountries = (e: {
+    target: { value: SetStateAction<string> };
+  }): void => {
     setSelected(e.target.value);
   };
 
@@ -48,46 +70,106 @@ const Update = () => {
     <>
       <div className="grid grid-cols-1">
         <p className="m-3 font-bold text-2xl">Update Delivery Provider</p>
-        <form className="m-6" action={saveProvider}>
+        <form className="m-6" onSubmit={onSubmit}>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input
-              type="text"
-              label="Provider Name"
-              placeholder="Enter provider name"
+            <Controller
+              name="id"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input type="number" label="ID" readOnly={true} {...field} />
+              )}
+            />
+          </div>
+          <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
+            <Controller
               name="provider_name"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  label="Provider Name"
+                  placeholder="Enter provider name"
+                  {...field}
+                />
+              )}
             />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Select
-              label="Countries Operate"
-              placeholder="Select countries where provider works"
-              selectionMode="multiple"
-              name="countries_operate"
-              onChange={setCountries}
-            >
-              {countries.map((country) => (
-                <SelectItem key={country.alpha2}>{country.name}</SelectItem>
-              ))}
-            </Select>
+            <Controller
+              name="country_operate"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  label="Countries Operate"
+                  placeholder="Select countries where provider works"
+                  selectionMode="multiple"
+                  {...field}
+                  onChange={setSelectedCountries}
+                  selectedKeys={provider?.country_operate}
+                >
+                  {countries.map((country) => (
+                    <SelectItem key={country.alpha2}>{country.name}</SelectItem>
+                  ))}
+                </Select>
+              )}
+            />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Input type="text" label="API Address" name="api_address" />
+            <Controller
+              name="api_address"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input type="text" label="API Address" {...field} />
+              )}
+            />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Input type="text" label="API Key" name="api_key" />
+            <Controller
+              name="api_key"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input type="text" label="API Key" {...field} />
+              )}
+            />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Input
-              type="text"
-              label="API Password/Secret"
+            <Controller
               name="api_password"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input type="text" label="API Password/Secret" {...field} />
+              )}
             />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Input type="email" label="Support Email" name="support_email" />
+            <Controller
+              name="support_email"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input type="email" label="Support Email" {...field} />
+              )}
+            />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
-            <Textarea label="Comments" placeholder="Enter your description" />
+            <Controller
+              name="comments"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Textarea
+                  label="Comments"
+                  placeholder="Enter your description"
+                  {...field}
+                />
+              )}
+            />
           </div>
 
           <Button
@@ -100,6 +182,7 @@ const Update = () => {
           </Button>
         </form>
       </div>
+      <ToastContainer />
     </>
   );
 };

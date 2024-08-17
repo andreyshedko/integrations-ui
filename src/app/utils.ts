@@ -5,8 +5,13 @@ export const fetchCountries = async (path: string): Promise<Response> => {
   return await response.json();
 };
 
-export const getDeliveryProvider = async (): Promise<Response> => {
+export const getDeliveryProviders = async (): Promise<Response> => {
   const response = await fetch("../api/delivery_providers");
+  return await response.json();
+};
+
+export const getDeliveryProvider = async (id: number): Promise<Response> => {
+  const response = await fetch(`../../api/delivery_providers/${id}`);
   return await response.json();
 };
 
@@ -25,7 +30,7 @@ export const addDeliveryProvider = async (
 
 export const updateDeliveryProvider = async (
   provider: DeliveryProvider,
-  path: sting
+  path: string
 ) => {
   const response = await fetch(path, {
     method: "PUT",
