@@ -7,9 +7,16 @@ import {
 } from "@/app/utils";
 import { Country } from "@/models/country";
 import { DeliveryProvider } from "@/models/delivery_provider";
-import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  listbox,
+  Select,
+  SelectItem,
+  Textarea,
+} from "@nextui-org/react";
 import { useParams } from "next/navigation";
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import { FormEvent, SetStateAction, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,24 +39,26 @@ const Update = () => {
   useEffect(() => {
     getDeliveryProvider(+params.id).then((data) => {
       setDeliveryProvider(data.data);
+      setSelected(data.data?.country_operate);
     });
   }, [params.id]);
 
   const ref = useRef(false);
 
-  const { control, formState, getValues } = useForm<FormData>({
+  const { control, getValues } = useForm<FormData>({
     values: provider as FormData,
   });
-  const { isDirty, isValid } = formState;
 
-  const onSubmit = (event): void => {
+  const onSubmit = (event: FormEvent<HTMLFormElement>): void => {
     const provider = getValues();
+    provider.country_operate = selectedCountries;
     event.preventDefault();
-    updateDeliveryProvider({ ...provider }, "../../../api/delivery_providers").then(
-      () => {
-        toast("Provider Updated");
-      }
-    );
+    updateDeliveryProvider(
+      { ...provider },
+      "../../../api/delivery_providers"
+    ).then(() => {
+      toast("Provider Updated");
+    });
   };
 
   const [countries, setCountries] = useState<Country[]>([]);
@@ -58,12 +67,10 @@ const Update = () => {
     fetchCountries(path).then((data) => setCountries(data.countries));
   }, []);
 
-  const [selectedCountries, setSelected] = useState<string>("");
+  const [selectedCountries, setSelected] = useState<string[]>([]);
 
-  const setSelectedCountries = (e: {
-    target: { value: SetStateAction<string> };
-  }): void => {
-    setSelected(e.target.value);
+  const setSelectedCountries = (countries: string): void => {
+    setSelected(countries.split(",").filter(v => v.length > 0));
   };
 
   return (
@@ -97,6 +104,7 @@ const Update = () => {
             />
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mt-3">
+            {Array.isArray(selectedCountries)}
             <Controller
               name="country_operate"
               control={control}
@@ -107,8 +115,8 @@ const Update = () => {
                   placeholder="Select countries where provider works"
                   selectionMode="multiple"
                   {...field}
-                  onChange={setSelectedCountries}
-                  selectedKeys={provider?.country_operate}
+                  onChange={(e) => setSelectedCountries(e.target.value)}
+                  selectedKeys={selectedCountries}
                 >
                   {countries.map((country) => (
                     <SelectItem key={country.alpha2}>{country.name}</SelectItem>
