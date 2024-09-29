@@ -3,8 +3,10 @@ import Image from "next/image";
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useTranslations } from "next-intl";
+// import { Link } from "@/i18n/routing";
 
-import "./global.css";
+import "../global.css";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -14,6 +16,7 @@ const navigation = [
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useTranslations("HomePage");
   return (
     <div className="bg-white flex flex-col justify-center h-lvh">
       <header className="absolute inset-x-0 top-0 z-50">
@@ -131,23 +134,22 @@ export default function Home() {
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-600 sm:text-6xl">
-             Simple solution for your online business.
+              {t("h1")}
             </h1>
-            <h3 className="mt-6 text-lg leading-8 text-gray-600">
-              Delivery and payment providers in one place with easy to use API.
-            </h3>
+            <h3 className="mt-6 text-lg leading-8 text-gray-600">{t("h3")}</h3>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <a
                 href="#"
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Get started
+                {t("getStarted")}
               </a>
               <a
                 href="#"
                 className="text-sm font-semibold leading-6 text-gray-600"
               >
-                Documentation <span aria-hidden="true">→</span>
+                {t("documentation")}
+                <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
