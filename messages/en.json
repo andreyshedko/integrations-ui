@@ -3,6 +3,10 @@
     "h1": "Simple solution for your online business.",
     "h3": "Delivery and payment providers in one place with easy to use API.",
     "getStarted": "Get Started",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "product": "Product",
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Log in"
   }
 }
