@@ -1,8 +1,8 @@
 export const logtoConfig = {
     endpoint: 'https://lhsjm8.logto.app/',
-    appId: '5wndohufxy04n526qoirm',
-    appSecret: 'KgNij2xp5oJg56t2ufnMq7aR1uIvKvUC',
+    appId: process.env.APP_ID,
+    appSecret: process.env.APP_SECRET,
     baseUrl: 'http://localhost:3000', // Change to your own base URL
-    cookieSecret: 'TPNce2advvEghKRFPB6tHDn86O2o5Wto', // Auto-generated 32 digit secret
+    cookieSecret: process.env.COOKIE_SECRET, // Auto-generated 32 digit secret
     cookieSecure: process.env.NODE_ENV === 'production',
   };

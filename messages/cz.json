@@ -7,6 +7,7 @@
     "product": "Produkt",
     "pricing": "Ceny",
     "about": "O nás",
-    "login": "Přihlášení"
+    "signin": "Přihlášení",
+    "signout": "Odhlásit se"
   }
 }
