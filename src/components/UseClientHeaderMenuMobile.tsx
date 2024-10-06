@@ -64,7 +64,7 @@ export default function UseClientHeaderMenuMobile() {
                 href="/login"
                 className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-600 hover:bg-gray-50"
               >
-                {t("login")}
+                {t("signin")}
               </Link>
             </div>
           </div>

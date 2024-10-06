@@ -5,6 +5,8 @@ import SignIn from "@/components/SignIn";
 import { logtoConfig } from "../logto";
 import { getLogtoContext, signIn, signOut } from "@logto/next/server-actions";
 import SignOut from "@/components/SignOut";
+import { Link } from "@/i18n/routing";
+import LanguageSelectMenu from "@/components/LanguageSelectMenu";
 
 export default async function Header() {
   const { isAuthenticated, claims } = await getLogtoContext(logtoConfig);
@@ -49,8 +51,14 @@ export default async function Header() {
               }}
             />
           ) : (
-            <div>
-              {claims?.username}
+            <div className="grid grid-cols-3 gap-4 items-center justify-items-center cursor-pointer">
+              <LanguageSelectMenu />
+              <Link
+                href="/profile"
+                className="mr-4 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                {claims?.username}
+              </Link>
               <SignOut
                 onSignOut={async () => {
                   "use server";
