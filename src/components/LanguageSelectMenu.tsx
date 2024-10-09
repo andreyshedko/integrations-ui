@@ -23,7 +23,7 @@ const LanguageSelectMenu = () => {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="size-6 text-gray-600"
+        className="size-6 text-gray-600 ml-4"
         onMouseEnter={() => setIsOpen(!isOpen)}
       >
         <path
@@ -33,17 +33,13 @@ const LanguageSelectMenu = () => {
         />
       </svg>
       {isOpen && (
-        <div className="absolute flex flex-col divide-x divide-gray-900/5 bg-gray-50 top-[5.5vh] right-[14.5vw]">
+        <div className="absolute flex flex-col divide-x divide-gray-900/5 bg-gray-50 top-[70%] min-[2561px]:right-[0.8%] 2xl:right-[4%] xl:right-[7%] md:right-[9.3%]">
           {callsToAction.map((item) => (
             <a
               key={item.name}
               href={item.href}
               className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
             >
-              {/* <item.icon
-                aria-hidden="true"
-                className="h-5 w-5 flex-none text-gray-400"
-              /> */}
               {item.name}
             </a>
           ))}

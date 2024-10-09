@@ -41,7 +41,7 @@ export default async function Header() {
         <div className="hidden lg:flex lg:gap-x-12">
           <UseClientHeaderMenu />
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end md:flex md:justify-end items-end">
           {!isAuthenticated ? (
             <SignIn
               onSignIn={async () => {
@@ -52,7 +52,6 @@ export default async function Header() {
             />
           ) : (
             <div className="grid grid-cols-3 gap-4 items-center justify-items-center cursor-pointer">
-              <LanguageSelectMenu />
               <Link
                 href="/profile"
                 className="mr-4 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -68,6 +67,7 @@ export default async function Header() {
               />
             </div>
           )}
+          <LanguageSelectMenu />
         </div>
       </nav>
       <UseClientHeaderMenuMobile />
